@@ -15,17 +15,19 @@ async function query(sql) {
 
 // Get all users
 async function getUsers() {
-  return query('select * from users');
+  return await query('select * from users');
 }
 
 // Get single user by ID
 async function getUserByID(id) {
-  return query(`select * from users where id = ${id}`); // unsafe string interpolation ; vulnerable to SQL injection
+  return await query(`select * from users where id = ${id}`)[0]; // unsafe string interpolation ; vulnerable to SQL injection
 }
 
 // Get single user by email
 async function getUserByEmail(email) {
-  return query('select * from users where email = ' + email); // unsafe string concatenation ; vulnerable to SQL injection
+  const q = `select * from users where email = '${email}'`; // unsafe string interpolation ; vulnerable to SQL injection
+  const rows = await query(q);
+  return rows[0];
 }
 
 module.exports = {
