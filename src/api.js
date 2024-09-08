@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const { logErr } = require('./logger.js');
 const { getUsers, getUserByID, getUserByEmail } = require('./queries.js');
+const { isAdmin, isLoggedIn } = require('./auth.js');
 
 // GET Index
 router.get('/', (req, res) => {
@@ -75,6 +76,15 @@ router.post('/login', async (req, res) => {
 router.post('/logout', (req, res) => {
   res.clearCookie('user');
   res.status(200).json({ success: true, message: 'logout successful' });
+});
+
+// Get Is Admin?
+router.get('/is-admin', (req, res) => {
+  if (!isLoggedIn(req, res)) {
+    return res.status(401).json({ success: false, message: 'not logged in' });
+  }
+  const userIsAdmin = isAdmin(req, res);
+  res.status(200).json({ success: true, message: `is admin: ${userIsAdmin}` });
 });
 
 // POST Contact
