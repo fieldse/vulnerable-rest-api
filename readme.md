@@ -86,6 +86,7 @@ These are the API endpoints:
 1. Explore how the authorization data is stored on the client after login.
 2. Experiment with SQL injection.
 3. Try direct reference of things you shouldn't be able to access.
+4. The API is not super secure. Is there information included in the responses that shouldn't be there?
 
 ## License
 

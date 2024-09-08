@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const { logErr, logSuccess, logDebug } = require('./logger.js');
-const { getUsers, getUserByID } = require('./db/queries.js');
+const { getUsers, getUserByID } = require('./queries.js');
 
 // GET Index
 router.get('/', (req, res) => {
@@ -83,7 +83,7 @@ router.post('/contact', (req, res) => {
 });
 
 // Validate body contains a list of required parameters
-// Throws error if any parameters are not in request body.
+// Throws error if any parameters are not in request body or request parameters
 const validateParams = (req, ...requiredParams) => {
   requiredParams.map((key) => {
     if (!req.body.hasOwnProperty(key) && !req.params.hasOwnProperty(key)) {
