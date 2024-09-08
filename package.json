@@ -1,0 +1,28 @@
+{
+  "name": "vulnerable-rest-api",
+  "version": "1.0.0",
+  "description": "An intentionally vulnerable REST API written in Node.js with Express",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fieldse/tafe-demo-api.git"
+  },
+  "keywords": [
+    "git",
+    "REST",
+    "API",
+    "vulnerable",
+    "sqli",
+    "idor",
+    "injection"
+  ],
+  "author": "Matt Fields",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fieldse/tafe-demo-api/issues"
+  },
+  "homepage": "https://github.com/fieldse/tafe-demo-api#readme"
+}
