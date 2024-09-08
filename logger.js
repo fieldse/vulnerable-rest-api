@@ -13,7 +13,7 @@ const logSuccess = (msg, ...opts) => {
 };
 
 const logErr = (msg, err) => {
-  console.log(`[error] ${msg}: `, err.message);
+  console.log(`[error] ${msg}: `, err?.message);
 };
 
 module.exports = {
