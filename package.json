@@ -4,6 +4,7 @@
   "description": "An intentionally vulnerable REST API written in Node.js with Express",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -24,5 +25,9 @@
   "bugs": {
     "url": "https://github.com/fieldse/tafe-demo-api/issues"
   },
-  "homepage": "https://github.com/fieldse/tafe-demo-api#readme"
+  "homepage": "https://github.com/fieldse/tafe-demo-api#readme",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2"
+  }
 }
