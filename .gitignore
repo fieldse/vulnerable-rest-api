@@ -1,0 +1,12 @@
+# Mac stuff
+.DS_Store
+
+# IDE stuff
+.vscode
+*.code-workspace
+
+# Environment
+*.env
+
+# Node stuff
+**/node_modules
