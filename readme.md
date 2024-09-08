@@ -1,4 +1,4 @@
-# TAFE Demo API
+# Vulnerable REST API
 
 ## Summary
 
