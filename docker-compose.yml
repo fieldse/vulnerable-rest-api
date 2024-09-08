@@ -1,0 +1,29 @@
+# Docker compose file 
+# This allows easy orchestration of the Express API and the MySQL database
+version: '3.1'
+
+services:
+
+  db:
+    image: mysql
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_ALLOW_EMPTY_PASSWORD: yes
+      
+      # For a non-root user, add the following, and adjust accordingly in your example.env
+      MYSQL_PASSWORD: ${DB_PASSWORD} 
+      MYSQL_USER: ${DB_USER}
+    
+    volumes:
+      # This allows persistent storage: comment out this line and the corresponding "volumes" section to make it transient.
+      - mysql_data:/var/lib/mysql   
+
+      # Automatically load the SQL script to initialize the database
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+volumes:
+  mysql_data:

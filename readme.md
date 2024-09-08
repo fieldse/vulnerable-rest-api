@@ -27,10 +27,27 @@ After that, install the project:
 npm install
 ```
 
+Optional: Run MySQL database in Docker
+
+If you want to use Docker to run your MySQL database instead of running it natively, you can use the `docker-compose.yml` file.
+
+You'll need to have Docker and Docker-Compose installed.
+
+3. (optional) Install Docker and Docker Compose
+
+- Install Docker: https://docs.docker.com/engine/install/
+- Install Docker Compose: https://docs.docker.com/compose/install/
+
 ## Usage
 
 1. Install the project.
-2. Start your MySQL server.
+2. Start your MySQL server. (options: use the docker-compose file, or run MySQL server natively)
+
+```
+# running with Docker
+docker compose up -d
+```
+
 3. Start the API server.
 
 ```

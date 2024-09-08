@@ -1,0 +1,61 @@
+Database details:
+======================
+- db name: demo
+- user: demo
+- password: example-pass
+- root password: (empty)
+
+
+Schema:
+======================
+mysql> show tables;
++----------------+
+| Tables_in_demo |
++----------------+
+| contact        |
+| users          |
++----------------+
+2 rows in set (0.01 sec)
+
+mysql> describe contact;
++------------+--------------+------+-----+-------------------+-----------------------------------------------+
+| Field      | Type         | Null | Key | Default           | Extra                                         |
++------------+--------------+------+-----+-------------------+-----------------------------------------------+
+| id         | int          | NO   | PRI | NULL              | auto_increment                                |
+| name       | varchar(255) | NO   |     | NULL              |                                               |
+| email      | varchar(255) | NO   |     | NULL              |                                               |
+| message    | text         | NO   |     | NULL              |                                               |
+| created_at | timestamp    | YES  |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED                             |
+| updated_at | timestamp    | YES  |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED on update CURRENT_TIMESTAMP |
++------------+--------------+------+-----+-------------------+-----------------------------------------------+
+6 rows in set (0.01 sec)
+
+mysql> describe users;
++------------+------------------------+------+-----+-------------------+-----------------------------------------------+
+| Field      | Type                   | Null | Key | Default           | Extra                                         |
++------------+------------------------+------+-----+-------------------+-----------------------------------------------+
+| id         | int                    | NO   | PRI | NULL              | auto_increment                                |
+| name       | varchar(255)           | NO   |     | NULL              |                                               |
+| email      | varchar(255)           | NO   | UNI | NULL              |                                               |
+| role       | enum('admin','normal') | YES  |     | normal            |                                               |
+| password   | varchar(255)           | NO   |     | NULL              |                                               |
+| created_at | timestamp              | YES  |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED                             |
+| updated_at | timestamp              | YES  |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED on update CURRENT_TIMESTAMP |
++------------+------------------------+------+-----+-------------------+-----------------------------------------------+
+7 rows in set (0.01 sec)
+
+
+Seed data
+======================== 
+mysql> select * from users;
++----+---------+-------------------------------+--------+------------+---------------------+---------------------+
+| id | name    | email                         | role   | password   | created_at          | updated_at          |
++----+---------+-------------------------------+--------+------------+---------------------+---------------------+
+|  1 | admin   | admin@mail.tafelab.internal   | admin  | admin123   | 2024-09-08 07:23:22 | 2024-09-08 07:23:22 |
+|  2 | sabik   | sabik@mail.tafelab.internal   | normal | sabik123   | 2024-09-08 07:23:22 | 2024-09-08 07:23:22 |
+|  3 | juliana | juliana@mail.tafelab.internal | normal | juliana123 | 2024-09-08 07:23:22 | 2024-09-08 07:23:22 |
+|  4 | jess    | jess@mail.tafelab.internal    | normal | jess123    | 2024-09-08 07:23:22 | 2024-09-08 07:23:22 |
+|  5 | ahmet   | ahmet@mail.tafelab.internal   | normal | ahmet123   | 2024-09-08 07:23:22 | 2024-09-08 07:23:22 |
+|  6 | matt    | matt@mail.tafelab.internal    | normal | matt123    | 2024-09-08 07:23:22 | 2024-09-08 07:23:22 |
++----+---------+-------------------------------+--------+------------+---------------------+---------------------+
+6 rows in set (0.00 sec)
