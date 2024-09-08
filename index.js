@@ -4,7 +4,7 @@ const app = express();
 const router = express.Router();
 const config = require('./config.js');
 
-const { API_URI, API_VERSION } = config;
+const { PORT, API_VERSION } = config;
 
 // GET /
 router.get('/', (req, res) => {
@@ -14,6 +14,12 @@ router.get('/', (req, res) => {
 // Set base URL to /api/v1
 app.use(`/api/${API_VERSION}`, router);
 
-app.listen(API_URI, () => {
-  console.log(`API started on ${API_URI}`);
+// Debug
+const debugParams = {
+  PORT,
+  API_VERSION,
+};
+console.log('=== debug: ', JSON.stringify(debugParams, null, 2));
+app.listen(PORT, () => {
+  console.log(`API started on ${PORT}`);
 });
