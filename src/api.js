@@ -1,12 +1,12 @@
 // API routes
 const express = require('express');
 const router = express.Router();
-const { logErr, logSuccess, logDebug } = require('./logger.js');
-const { getUsers, getUserByID } = require('./queries.js');
+const { logErr } = require('./logger.js');
+const { getUsers, getUserByID, getUserByEmail } = require('./queries.js');
+const { isAdmin, isLoggedIn } = require('./auth.js');
 
 // GET Index
 router.get('/', (req, res) => {
-  logSuccess('POST /');
   res.send('Welcome to Vulnerable API!');
 });
 
@@ -14,8 +14,6 @@ router.get('/', (req, res) => {
 router.get('/users', async (req, res) => {
   try {
     const rows = await getUsers();
-    logDebug('query results: ', rows);
-    logSuccess('GET /users');
     res.status(200).json({
       success: true,
       rows,
@@ -34,7 +32,6 @@ router.get('/users/:id', async (req, res) => {
     const id = req.params.id;
     validateParams(req, 'id');
     const rows = await getUserByID(id);
-    logSuccess(`GET /users/${id}`, rows);
     res.status(200).json({ success: true, rows });
   } catch (err) {
     logErr('GET /users/:id', err);
@@ -47,10 +44,26 @@ router.get('/users/:id', async (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     validateParams(req, 'email', 'password');
-    // Do something with these
     const { email, password } = req.body;
-    logSuccess('POST /login', JSON.stringify({ email, password }));
+    const user = await getUserByEmail(email);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'user not found' }); // insecure: allows account enumeration (however, we have a GET /users route already)
+    }
+    if (password !== user.password) {
+      return res
+        .status(401)
+        .json({ success: false, message: 'invalid password' }); // insecure: allows account enumeration, by revealing user exists but invalid password.
+    }
 
+    // Valid login -- set cookie
+    const cookie = JSON.stringify({
+      id: user.id, // insecure: we directly set these in a cookie and use it later for authorization
+      email: user.email,
+      role: user.role,
+    });
+    res.cookie('user', cookie);
     res.status(200).json({ success: true, message: 'login successful' });
   } catch (err) {
     res
@@ -61,8 +74,23 @@ router.post('/login', async (req, res) => {
 
 // POST Logout
 router.post('/logout', (req, res) => {
-  logSuccess('POST /logout');
+  res.clearCookie('user');
   res.status(200).json({ success: true, message: 'logout successful' });
+});
+
+// GET is-logged-in
+router.get('/is-logged-in', (req, res) => {
+  const message = isLoggedIn(req, res) ? 'logged in' : 'not logged in';
+  res.status(200).json({ success: true, message });
+});
+
+// GET is-admin
+router.get('/is-admin', (req, res) => {
+  if (!isLoggedIn(req, res)) {
+    return res.status(401).json({ success: false, message: 'not logged in' });
+  }
+  const userIsAdmin = isAdmin(req, res);
+  res.status(200).json({ success: true, message: `is admin: ${userIsAdmin}` });
 });
 
 // POST Contact
@@ -72,7 +100,6 @@ router.post('/contact', (req, res) => {
     validateParams(req, 'email', 'name', 'message');
     // Do something with these
     const { email, name, message } = req.body;
-    logSuccess('POST /contact', JSON.stringify({ email, name, message }));
     res.status(200).json({ success: true, message: 'Contact successful' });
   } catch (err) {
     logErr('POST /contact', err);

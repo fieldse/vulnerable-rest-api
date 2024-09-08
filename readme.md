@@ -72,6 +72,7 @@ These are the API endpoints:
 - `POST /password-reset` - Accepts `userId` and `password` parameters in request body. Expects current user to be authenticated.
 - `GET  /users` - Returns list of users.
 - `GET  /users/1` - Returns single user by ID.
+- `GET  /is-admin` - Checks if the currently logged in user is an admin
 
 ## Configuration
 
