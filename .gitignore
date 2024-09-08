@@ -6,7 +6,7 @@
 *.code-workspace
 
 # Environment
-*.env
+.env
 
 # Node stuff
 **/node_modules
