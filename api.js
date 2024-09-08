@@ -1,9 +1,8 @@
 // API routes
 const express = require('express');
 const router = express.Router();
-const { logErr, logSuccess } = require('./logger.js');
-
-const placeholderUser = { id: 1, email: 'user@example.com' };
+const { logErr, logSuccess, logDebug } = require('./logger.js');
+const { getUsers, getUserByID } = require('./db/queries.js');
 
 // GET Index
 router.get('/', (req, res) => {
@@ -12,35 +11,40 @@ router.get('/', (req, res) => {
 });
 
 // GET /users
-router.get('/users', (req, res) => {
-  logSuccess('GET /users');
-  res
-    .status(200)
-    .json({
+router.get('/users', async (req, res) => {
+  try {
+    const rows = await getUsers();
+    logDebug('query results: ', rows);
+    logSuccess('GET /users');
+    res.status(200).json({
       success: true,
-      users: [placeholderUser, placeholderUser, placeholderUser],
+      rows,
     });
+  } catch (err) {
+    res.status(400).json({
+      success: false,
+      error: err.message,
+    });
+  }
 });
 
 // GET /users/:id
-router.get('/users/:id', (req, res) => {
+router.get('/users/:id', async (req, res) => {
   try {
     const id = req.params.id;
-    if (!id) {
-      throw new Error('id parameter is required');
-    }
-    const user = { ...placeholderUser, id }; // TODO: example user
-    logSuccess(`GET /users/${id}`, user);
-    res.status(200).json({ success: true, user });
+    validateParams(req, 'id');
+    const rows = await getUserByID(id);
+    logSuccess(`GET /users/${id}`, rows);
+    res.status(200).json({ success: true, rows });
   } catch (err) {
     logErr('GET /users/:id', err);
-    res.status(401).json({ error: err.message });
+    res.status(401).json({ success: false, error: err.message });
   }
 });
 
 // POST Login
 // Params:  email, password
-router.post('/login', (req, res) => {
+router.post('/login', async (req, res) => {
   try {
     validateParams(req, 'email', 'password');
     // Do something with these
@@ -82,7 +86,7 @@ router.post('/contact', (req, res) => {
 // Throws error if any parameters are not in request body.
 const validateParams = (req, ...requiredParams) => {
   requiredParams.map((key) => {
-    if (!req.body.hasOwnProperty(key)) {
+    if (!req.body.hasOwnProperty(key) && !req.params.hasOwnProperty(key)) {
       throw new Error(`missing required parameter: ${key}`);
     }
   });
