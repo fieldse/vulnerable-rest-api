@@ -32,3 +32,13 @@ CREATE TABLE IF NOT EXISTS contact (
 
 -- Verify the user privileges
 SHOW GRANTS FOR 'demo'@'localhost';
+
+-- Seed users and passwords
+INSERT INTO users (name, email, password, role, created_at, updated_at)
+VALUES 
+    ('admin', 'admin@mail.tafelab.internal', 'admin123', 'admin', NOW(), NOW()),
+    ('sabik', 'sabik@mail.tafelab.internal', 'sabik123', 'normal', NOW(), NOW()),
+    ('juliana', 'juliana@mail.tafelab.internal', 'juliana123', 'normal', NOW(), NOW()),
+    ('jess', 'jess@mail.tafelab.internal', 'jess123', 'normal', NOW(), NOW()),
+    ('ahmet', 'ahmet@mail.tafelab.internal', 'ahmet123', 'normal', NOW(), NOW()),
+    ('matt', 'matt@mail.tafelab.internal', 'matt123', 'normal', NOW(), NOW());
