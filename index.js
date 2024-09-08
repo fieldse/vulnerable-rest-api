@@ -1,18 +1,21 @@
 // Intentionally vulnerable Express.js REST API
 const express = require('express');
 const app = express();
-const router = express.Router();
 const config = require('./config.js');
+const api = require('./api.js');
+const bodyParser = require('body-parser');
+const morgan = require('morgan');
+const { logInfo } = require('./logger.js');
+const { PORT, API_BASE_PATH } = config;
 
-const { PORT, API_VERSION } = config;
+// Body-parser middleware for JSON requests
+app.use(bodyParser.json());
 
-// GET /
-router.get('/', (req, res) => {
-  res.send('Hello World!');
-});
+// Logging
+app.use(morgan('tiny'));
 
-// Set base URL to /api/v1
-app.use(`/api/${API_VERSION}`, router);
+// Base API path default: /api/v1
+app.use(API_BASE_PATH, api);
 app.listen(PORT, () => {
-  console.log(`API started on ${PORT}`);
+  logInfo(`API started on ${PORT}`);
 });
