@@ -1,6 +1,6 @@
 // MySQL database connection
-const mysql = require('mysql');
-const { DB_HOST, DB_USER, DB_PASSWORD, DB_NAME } = require('./config.js');
+const mysql = require('mysql2/promise');
+const { DB_HOST, DB_USER, DB_PASSWORD, DB_NAME } = require('../config.js');
 
 // Initialize database connection
 function newConn() {

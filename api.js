@@ -1,9 +1,8 @@
 // API routes
 const express = require('express');
 const router = express.Router();
-const { logErr, logSuccess } = require('./logger.js');
-
-const placeholderUser = { id: 1, email: 'user@example.com' };
+const { logErr, logSuccess, logDebug } = require('./logger.js');
+const { getUsers } = require('./db/queries.js');
 
 // GET Index
 router.get('/', (req, res) => {
@@ -12,14 +11,21 @@ router.get('/', (req, res) => {
 });
 
 // GET /users
-router.get('/users', (req, res) => {
-  logSuccess('GET /users');
-  res
-    .status(200)
-    .json({
+router.get('/users', async (req, res) => {
+  try {
+    const results = await getUsers();
+    logDebug('query results: ', results);
+    logSuccess('GET /users');
+    res.status(200).json({
       success: true,
-      users: [placeholderUser, placeholderUser, placeholderUser],
+      users: results,
     });
+  } catch (err) {
+    res.status(400).json({
+      success: false,
+      error: err.message,
+    });
+  }
 });
 
 // GET /users/:id
@@ -34,7 +40,7 @@ router.get('/users/:id', (req, res) => {
     res.status(200).json({ success: true, user });
   } catch (err) {
     logErr('GET /users/:id', err);
-    res.status(401).json({ error: err.message });
+    res.status(401).json({ success: false, error: err.message });
   }
 });
 
