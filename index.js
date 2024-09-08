@@ -1,5 +1,5 @@
 // Intentionally vulnerable Express.js REST API
-import express from 'express';
+const express = require('express');
 const app = express();
 const router = express.Router();
 
@@ -8,6 +8,7 @@ router.get('/', (req, res) => {
   res.send('Hello World');
 });
 
+// Set base URL to /api/v1
 app.use('/api/v1', router);
 
 app.listen(3000, () => {
