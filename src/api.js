@@ -78,7 +78,13 @@ router.post('/logout', (req, res) => {
   res.status(200).json({ success: true, message: 'logout successful' });
 });
 
-// Get Is Admin?
+// GET is-logged-in
+router.get('/is-logged-in', (req, res) => {
+  const message = isLoggedIn(req, res) ? 'logged in' : 'not logged in';
+  res.status(200).json({ success: true, message });
+});
+
+// GET is-admin
 router.get('/is-admin', (req, res) => {
   if (!isLoggedIn(req, res)) {
     return res.status(401).json({ success: false, message: 'not logged in' });
