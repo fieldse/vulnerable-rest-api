@@ -4,6 +4,7 @@ const router = express.Router();
 const { logErr } = require('./logger.js');
 const { getUsers, getUserByID, getUserByEmail } = require('./queries.js');
 const { isAdmin, isLoggedIn } = require('./auth.js');
+const { updatePasswordByEmail } = require('./queries.js');
 
 // GET Index
 router.get('/', (req, res) => {
@@ -91,6 +92,22 @@ router.get('/is-admin', (req, res) => {
   }
   const userIsAdmin = isAdmin(req, res);
   res.status(200).json({ success: true, message: `is admin: ${userIsAdmin}` });
+});
+
+// UPDATE password -- update password for a single user by email
+// Params:  email, password
+router.post('/update-password', async (req, res) => {
+  try {
+    validateParams(req, 'email', 'password');
+    const { email, password } = req.body;
+    await updatePasswordByEmail(email, password);
+    res.status(200).json({ success: true, message: 'password updated' });
+  } catch (err) {
+    res.status(400).json({
+      success: false,
+      message: 'updated password failed:' + err.message,
+    });
+  }
 });
 
 // POST Contact

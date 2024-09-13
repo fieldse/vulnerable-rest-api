@@ -13,6 +13,23 @@ async function query(sql) {
   }
 }
 
+// Uopdate Password by ID
+async function updatePasswordById(id, newPassword) {
+  return await query(
+    `update users set password = '${newPassword}' where id = ${id} `
+  );
+}
+
+// Uopdate Password by email address
+async function updatePasswordByEmail(email, newPassword) {
+  if (!email || !newPassword) {
+    throw new Error('email and password parameters are required');
+  }
+  return await query(
+    `update users set password = '${newPassword}' where email = '${email}' `
+  );
+}
+
 // Get all users
 async function getUsers() {
   return await query('select * from users');
@@ -34,4 +51,6 @@ module.exports = {
   getUsers,
   getUserByID,
   getUserByEmail,
+  updatePasswordById,
+  updatePasswordByEmail,
 };
