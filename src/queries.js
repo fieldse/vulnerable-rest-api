@@ -15,8 +15,9 @@ async function query(sql) {
 
 // Validate password -- returns boolean based on password match.
 async function validatePassword(email, password) {
-  const q = `select password from users where email ='${email}'`;
-  const rows = await query(q);
+  const rows = await query(
+    `select password from users where email ='${email}'`
+  );
   if (!rows) {
     throw new Error(`no user found for email '${email}'`); // insecure: leaking user information
   }
@@ -47,9 +48,10 @@ async function getUsers() {
 
 // Get single user by ID
 async function getUserByID(id) {
-  return await query(
-    `select id, name, email, role from users where id = ${id}`
-  )[0]; // unsafe string interpolation ; vulnerable to SQL injection
+  const result = await query(
+    `select id, name, email, role from users where id = ${id}` // unsafe string interpolation ; vulnerable to SQL injection
+  );
+  return result[0];
 }
 
 // Get single user by email
@@ -59,10 +61,19 @@ async function getUserByEmail(email) {
   return rows[0];
 }
 
+// Update user. Returns true if rows matched.
+async function updateUser(id, name, email) {
+  const result = await query(
+    `UPDATE users set name = '${name}', email = '${email}' WHERE id = ${id}` // unsafe string interpolation ; vulnerable to SQL injection
+  );
+  return !!result.affectedRows;
+}
+
 module.exports = {
   getUsers,
   getUserByID,
   getUserByEmail,
+  updateUser,
   updatePasswordById,
   updatePasswordByEmail,
   validatePassword,
