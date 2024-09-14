@@ -1,12 +1,14 @@
 // API routes
 const express = require('express');
 const router = express.Router();
-const { logErr } = require('./logger.js');
+const { logErr, logInfo, logSuccess } = require('./logger.js');
 const {
   getUsers,
   getUserByID,
   getUserByEmail,
   validatePassword,
+  updatePasswordById,
+  updateUser,
 } = require('./queries.js');
 const { isAdmin, isLoggedIn } = require('./auth.js');
 const { updatePasswordByEmail } = require('./queries.js');
@@ -45,6 +47,34 @@ router.get('/users/:id', async (req, res) => {
   }
 });
 
+// PUT /users/:id
+// Allows updating a user's name, email, or password all in one request.
+router.put('/users/:id', async (req, res) => {
+  try {
+    validateParams(req, 'id', 'name', 'email');
+    const { id } = req.params;
+    const { name, email, password } = req.body; // Insecure: No validation for logged-in user role, nor matching ID to target user ID.
+
+    // update password if given
+    if (!!password) {
+      logInfo(`update password for user '${email}'`);
+      await updatePasswordById(id, password);
+    }
+    const ok = await updateUser(id, name, email);
+    if (!ok) {
+      return res
+        .status(404)
+        .json({ success: false, error: `no user found for id ${id}` });
+    }
+    const user = { id, name, email };
+    logSuccess('updated user details:', JSON.stringify(user));
+    res.status(200).json({ success: true, user });
+  } catch (err) {
+    logErr('GET /users/:id', err);
+    res.status(400).json({ success: false, error: err.message });
+  }
+});
+
 // POST Login
 // Params:  email, password
 router.post('/login', async (req, res) => {
@@ -65,13 +95,9 @@ router.post('/login', async (req, res) => {
     }
 
     // Valid login -- set cookie
-    const cookie = JSON.stringify({
-      id: user.id, // insecure: we directly set these in a cookie and use it later for authorization
-      email: user.email,
-      role: user.role,
-    });
+    const cookie = JSON.stringify(user);
     res.cookie('user', cookie);
-    res.status(200).json({ success: true, message: 'login successful' });
+    res.status(200).json({ success: true, message: 'login successful', user });
   } catch (err) {
     res
       .status(400)
