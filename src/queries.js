@@ -13,14 +13,24 @@ async function query(sql) {
   }
 }
 
-// Uopdate Password by ID
+// Validate password -- returns boolean based on password match.
+async function validatePassword(email, password) {
+  const q = `select password from users where email ='${email}'`;
+  const rows = await query(q);
+  if (!rows) {
+    throw new Error(`no user found for email '${email}'`); // insecure: leaking user information
+  }
+  return rows[0].password === password;
+}
+
+// Update Password by ID
 async function updatePasswordById(id, newPassword) {
   return await query(
     `update users set password = '${newPassword}' where id = ${id} `
   );
 }
 
-// Uopdate Password by email address
+// Update Password by email address
 async function updatePasswordByEmail(email, newPassword) {
   if (!email || !newPassword) {
     throw new Error('email and password parameters are required');
@@ -32,17 +42,19 @@ async function updatePasswordByEmail(email, newPassword) {
 
 // Get all users
 async function getUsers() {
-  return await query('select * from users');
+  return await query('select id, name, email, role from users');
 }
 
 // Get single user by ID
 async function getUserByID(id) {
-  return await query(`select * from users where id = ${id}`)[0]; // unsafe string interpolation ; vulnerable to SQL injection
+  return await query(
+    `select id, name, email, role from users where id = ${id}`
+  )[0]; // unsafe string interpolation ; vulnerable to SQL injection
 }
 
 // Get single user by email
 async function getUserByEmail(email) {
-  const q = `select * from users where email = '${email}'`; // unsafe string interpolation ; vulnerable to SQL injection
+  const q = `select id, name, email, role from users where email = '${email}'`; // unsafe string interpolation ; vulnerable to SQL injection
   const rows = await query(q);
   return rows[0];
 }
@@ -53,4 +65,5 @@ module.exports = {
   getUserByEmail,
   updatePasswordById,
   updatePasswordByEmail,
+  validatePassword,
 };

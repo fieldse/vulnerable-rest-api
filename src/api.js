@@ -2,7 +2,12 @@
 const express = require('express');
 const router = express.Router();
 const { logErr } = require('./logger.js');
-const { getUsers, getUserByID, getUserByEmail } = require('./queries.js');
+const {
+  getUsers,
+  getUserByID,
+  getUserByEmail,
+  validatePassword,
+} = require('./queries.js');
 const { isAdmin, isLoggedIn } = require('./auth.js');
 const { updatePasswordByEmail } = require('./queries.js');
 
@@ -52,7 +57,8 @@ router.post('/login', async (req, res) => {
         .status(404)
         .json({ success: false, message: 'user not found' }); // insecure: allows account enumeration (however, we have a GET /users route already)
     }
-    if (password !== user.password) {
+    const passwordValid = await validatePassword(email, password);
+    if (!passwordValid) {
       return res
         .status(401)
         .json({ success: false, message: 'invalid password' }); // insecure: allows account enumeration, by revealing user exists but invalid password.
@@ -69,7 +75,7 @@ router.post('/login', async (req, res) => {
   } catch (err) {
     res
       .status(400)
-      .json({ success: false, message: 'invalid request: ' + err.message });
+      .json({ success: false, message: 'request error: ' + err.message });
   }
 });
 
