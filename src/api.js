@@ -28,10 +28,7 @@ router.get('/users', async (req, res) => {
       rows,
     });
   } catch (err) {
-    res.status(400).json({
-      success: false,
-      error: err.message,
-    });
+    handleErr(err, req, res);
   }
 });
 
@@ -43,8 +40,7 @@ router.get('/users/:id', async (req, res) => {
     const rows = await getUserByID(id);
     res.status(200).json({ success: true, rows });
   } catch (err) {
-    logErr('GET /users/:id', err);
-    res.status(401).json({ success: false, error: err.message });
+    handleErr(err, req, res, err.message, 401);
   }
 });
 
@@ -63,16 +59,14 @@ router.put('/users/:id', async (req, res) => {
     }
     const ok = await updateUser(id, name, email);
     if (!ok) {
-      return res
-        .status(404)
-        .json({ success: false, error: `no user found for id ${id}` });
+      let err = new Error(`no user found for id ${id}`);
+      handleErr(err, req, res, err.message, 404);
     }
     const user = { id, name, email };
     logSuccess('updated user details:', JSON.stringify(user));
     res.status(200).json({ success: true, user });
   } catch (err) {
-    logErr('GET /users/:id', err);
-    res.status(400).json({ success: false, error: err.message });
+    handleErr(err, req, res);
   }
 });
 
@@ -100,9 +94,7 @@ router.post('/login', async (req, res) => {
     res.cookie('user', cookie);
     res.status(200).json({ success: true, message: 'login successful', user });
   } catch (err) {
-    res
-      .status(400)
-      .json({ success: false, message: 'request error: ' + err.message });
+    handleErr(err, req, res);
   }
 });
 
@@ -122,7 +114,7 @@ router.get('/is-logged-in', (req, res) => {
 // Check if the currently logged in user is an admin
 router.get('/is-admin', (req, res) => {
   if (!isLoggedIn(req, res)) {
-    return res.status(401).json({ success: false, message: 'not logged in' });
+    return handleErr(err, req, res, 'not logged in', 401);
   }
   const userIsAdmin = isAdmin(req, res);
   res.status(200).json({ success: true, message: `is admin: ${userIsAdmin}` });
@@ -137,10 +129,7 @@ router.post('/update-password', async (req, res) => {
     await updatePasswordByEmail(email, password);
     res.status(200).json({ success: true, message: 'password updated' });
   } catch (err) {
-    res.status(400).json({
-      success: false,
-      message: 'updated password failed:' + err.message,
-    });
+    handleErr(err, req, res, 'update password failed: ' + err.message);
   }
 });
 
@@ -152,18 +141,31 @@ router.post('/contact', (req, res) => {
     const { email, name, message } = req.body; // TODO: Do something with these
     res.status(200).json({ success: true, message: 'Contact successful' });
   } catch (err) {
-    logErr('POST /contact', err);
-    res
-      .status(400)
-      .json({ success: false, message: 'invalid request: ' + err.message });
+    handleErr(err, req, res);
   }
 });
+
+// GET news
 
 // Catch-all / unhandled routes
 router.all('*', (req, res) => {
   const err = new Error('path not found');
-  logErr(`${req.method} ${req.path}`, err);
-  res.status(400).json({ success: false, message: err.message });
+  return handleErr(err, req, res, 404);
 });
+
+// Handle invalid request.
+// Logs error, returns error status code with message.
+const handleErr = (
+  err,
+  req,
+  res,
+  message = 'invalid request',
+  statusCode = 400
+) => {
+  logErr(`${req.method} ${req.path}`, err);
+  return res
+    .status(statusCode)
+    .json({ success: false, message: message || err.message });
+};
 
 module.exports = router;
