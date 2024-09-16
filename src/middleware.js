@@ -1,4 +1,5 @@
-// Some insecure authorization functions
+// Some insecure middleware functions
+// TODO: Fix these to use next() syntax (maybe)
 
 // Check if the user is logged in (... by existence of a cookie!)
 function isLoggedIn(req, res) {
