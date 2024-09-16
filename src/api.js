@@ -147,8 +147,7 @@ router.post('/update-password', async (req, res) => {
 router.post('/contact', (req, res) => {
   try {
     validateParams(req, 'email', 'name', 'message');
-    // Do something with these
-    const { email, name, message } = req.body;
+    const { email, name, message } = req.body; // TODO: Do something with these
     res.status(200).json({ success: true, message: 'Contact successful' });
   } catch (err) {
     logErr('POST /contact', err);
@@ -156,6 +155,13 @@ router.post('/contact', (req, res) => {
       .status(400)
       .json({ success: false, message: 'invalid request: ' + err.message });
   }
+});
+
+// Catch-all / unhandled routes
+router.all('*', (req, res) => {
+  const err = new Error('path not found');
+  logErr(`${req.method} ${req.path}`, err);
+  res.status(400).json({ success: false, message: err.message });
 });
 
 // Validate body contains a list of required parameters
