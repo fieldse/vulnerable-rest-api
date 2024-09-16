@@ -1,4 +1,5 @@
-// DB queries
+// SQL queries for DB requests
+
 const { newConn } = require('./dbConn.js');
 
 // Create a new connection and perform a query.

@@ -8,10 +8,11 @@ const {
   getUserByEmail,
   validatePassword,
   updatePasswordById,
+  updatePasswordByEmail,
   updateUser,
 } = require('./queries.js');
 const { isAdmin, isLoggedIn } = require('./auth.js');
-const { updatePasswordByEmail } = require('./queries.js');
+const { validateParams } = require('./utils.js');
 
 // GET Index
 router.get('/', (req, res) => {
@@ -118,6 +119,7 @@ router.get('/is-logged-in', (req, res) => {
 });
 
 // GET is-admin
+// Check if the currently logged in user is an admin
 router.get('/is-admin', (req, res) => {
   if (!isLoggedIn(req, res)) {
     return res.status(401).json({ success: false, message: 'not logged in' });
@@ -163,15 +165,5 @@ router.all('*', (req, res) => {
   logErr(`${req.method} ${req.path}`, err);
   res.status(400).json({ success: false, message: err.message });
 });
-
-// Validate body contains a list of required parameters
-// Throws error if any parameters are not in request body or request parameters
-const validateParams = (req, ...requiredParams) => {
-  requiredParams.map((key) => {
-    if (!req.body.hasOwnProperty(key) && !req.params.hasOwnProperty(key)) {
-      throw new Error(`missing required parameter: ${key}`);
-    }
-  });
-};
 
 module.exports = router;
