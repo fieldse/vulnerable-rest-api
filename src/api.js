@@ -146,6 +146,13 @@ router.post('/contact', (req, res) => {
 });
 
 // GET news
+router.get('/news', (req, res) => {});
+
+// POST news
+router.post('/news', (req, res) => {});
+
+// DELETE news
+router.delete('/news', (req, res) => {});
 
 // Catch-all / unhandled routes
 router.all('*', (req, res) => {
