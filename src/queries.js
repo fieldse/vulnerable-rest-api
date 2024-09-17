@@ -7,8 +7,8 @@ import db from './dbConn.js';
 export async function query(sql) {
   const dbConn = await db.newConn();
   try {
-    const [rows] = await dbConn.query(sql);
-    return rows;
+    const [result] = await dbConn.query(sql);
+    return result;
   } catch (err) {
     throw new Error('query error: ' + err.message);
   }
@@ -19,8 +19,8 @@ export async function query(sql) {
 export async function querySafe(sql, ...params) {
   const dbConn = await db.newConn();
   try {
-    const [rows] = await dbConn.query(sql, ...params);
-    return rows;
+    const [result] = await dbConn.query(sql, [...params]);
+    return result;
   } catch (err) {
     throw new Error('query error: ' + err.message);
   }
@@ -67,6 +67,16 @@ export async function getUserByID(id) {
   return result[0];
 }
 
+// Add user (safe/parameterized). Returns ID on success
+export async function addUser(name, email, role) {
+  const result = await querySafe(
+    'INSERT INTO message_board (name, email, role) VALUES (?, ?, ?)',
+    name,
+    email,
+    role
+  );
+  return result.insertId;
+}
 // Get single user by email
 export async function getUserByEmail(email) {
   const q = `SELECT id, name, email, role FROM users WHERE email = '${email}'`; // unsafe string interpolation ; vulnerable to SQL injection
@@ -116,14 +126,15 @@ export async function getMessages() {
   );
 }
 
-// Add message board entry
+// Add message board entry. Returns ID on success
 export async function addMessage(title, content, userId) {
-  return await querySafe(
+  const result = await querySafe(
     'INSERT INTO message_board (title, content, posted_by_id) VALUES (?, ?, ?)',
     title,
     content,
     userId
   );
+  return result.insertId;
 }
 
 // Delete message board entry
