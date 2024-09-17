@@ -1,14 +1,12 @@
 // Intentionally vulnerable Express.js REST API
-const express = require('express');
+import express from 'express';
+import bodyParser from 'body-parser';
+import morgan from 'morgan';
+import cookieParser from 'cookie-parser';
+import routes from './routes/index.js';
+import { PORT } from './config.js';
+import { logInfo } from './logger.js';
 const app = express();
-const config = require('./config.js');
-const api = require('./api.js');
-const bodyParser = require('body-parser');
-const morgan = require('morgan');
-const cookieParser = require('cookie-parser');
-
-const { logInfo } = require('./logger.js');
-const { PORT, API_BASE_PATH } = config;
 
 // Body-parser middleware for JSON requests
 app.use(bodyParser.json());
@@ -19,8 +17,9 @@ app.use(cookieParser());
 // Logging
 app.use(morgan('tiny'));
 
-// Base API path default: /api/v1
-app.use(API_BASE_PATH, api);
+// Add routes
+app.use(routes);
+
 app.listen(PORT, () => {
   logInfo(`API started on ${PORT}`);
 });
