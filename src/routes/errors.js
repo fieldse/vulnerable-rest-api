@@ -7,5 +7,5 @@ export const handleErr = (err, req, res, message = '', statusCode = 400) => {
   logErr(`${req.method} ${req.path}`, err);
   return res
     .status(statusCode)
-    .json({ success: false, message: message || err.message });
+    .json({ success: false, message: message || err.message }); // Insecure: including error traces leaks error information. This could include database information, filepaths, or schema details
 };

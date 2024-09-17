@@ -104,14 +104,15 @@ export async function getNews() {
   );
 }
 
-// Add news entry
+// Add news entry. Returns ID on success
 export async function addNews(title, content, userId) {
-  return await querySafe(
+  const result = await querySafe(
     'INSERT INTO news (title, content, posted_by_id) VALUES (?, ?, ?)',
     title,
     content,
     userId
   );
+  return result.insertId;
 }
 
 // Delete news entry
