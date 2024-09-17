@@ -4,7 +4,7 @@ const router = express.Router();
 const { validateParams } = require('../utils.js');
 const { isAdmin, isLoggedIn } = require('../middleware.js');
 const { getUserByEmail, validatePassword } = require('../queries.js');
-const { handleErr } = require('../errors.js');
+const { handleErr } = require('./errors.js');
 
 // POST Login
 // Params:  email, password

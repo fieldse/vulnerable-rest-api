@@ -3,7 +3,7 @@
 const express = require('express');
 const router = express.Router();
 const { validateParams } = require('../utils.js');
-const { handleErr } = require('../errors.js');
+const { handleErr } = require('./errors.js');
 
 // POST Contact
 // Params: email, name, message

@@ -1,7 +1,7 @@
 // 404 and error routes
 const express = require('express');
 const router = express.Router();
-const { handleErr } = require('../errors');
+const { handleErr } = require('./errors.js');
 
 // 400
 router.get('/400', (req, res) => {
