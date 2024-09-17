@@ -11,3 +11,11 @@ export function isAdmin(req) {
   const role = JSON.parse(cookie).role;
   return role === 'admin'; // Insecure: simply checks the cookie for 'role' parameter
 }
+
+// Check if the logged in user's ID matches the userId route parameter
+export function isCurrentUser(req) {
+  const userId = req.params.userId;
+  const cookie = req.cookies?.user;
+  if (!cookie || !userId) return false;
+  return userId == cookie.id;
+}

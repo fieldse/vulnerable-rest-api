@@ -1,6 +1,6 @@
 // Some insecure middleware functions
 
-import { isAdmin, isLoggedIn } from './auth.js';
+import { isAdmin, isLoggedIn, isCurrentUser } from './auth.js';
 import { handleUnauthorized } from './routes/errors.js';
 
 // Require user to be logged in.
@@ -17,6 +17,15 @@ export function checkIsLoggedIn(req, res, next) {
 export function checkIsAdmin(req, res, next) {
   if (!isAdmin(req)) {
     return handleUnauthorized(req, res, 'requires admin role');
+  }
+  next();
+}
+
+// Require currently logged in user to match userId parameter, or have admin role
+// This checks insecurely against a 'role' attribute stored in the cookie
+export function checkIsCurrentUserOrAdmin(req, res, next) {
+  if (!isCurrentUser(req) || !isAdmin(req)) {
+    return handleUnauthorized(req, res, 'requires admin or current user role');
   }
   next();
 }
