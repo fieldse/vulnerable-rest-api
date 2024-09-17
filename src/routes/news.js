@@ -4,6 +4,7 @@ import express from 'express';
 import { getNews, addNews, deleteNews } from '../queries.js';
 import { handleErr } from './errors.js';
 import { validateParams } from '../utils.js';
+import { checkIsAdmin } from '../middleware.js';
 const router = express.Router();
 
 // GET news
@@ -17,7 +18,7 @@ router.get('/news', async (req, res) => {
 });
 
 // POST news
-router.post('/news', async (req, res) => {
+router.post('/news', checkIsAdmin, async (req, res) => {
   try {
     const { title, content, userId } = req.body;
     validateParams(req, 'title', 'content', 'userId');
@@ -29,7 +30,7 @@ router.post('/news', async (req, res) => {
 });
 
 // DELETE news
-router.delete('/news/:id', async (req, res) => {
+router.delete('/news/:id', checkIsAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     validateParams(req, 'id');
