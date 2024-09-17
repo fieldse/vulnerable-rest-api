@@ -1,7 +1,6 @@
 // Auth-related routes
 import express from 'express';
 import { validateParams } from '../utils.js';
-import { isAdmin, isLoggedIn } from '../middleware.js';
 import { getUserByEmail, validatePassword } from '../queries.js';
 import { handleErr } from './errors.js';
 const router = express.Router();
@@ -38,23 +37,6 @@ router.post('/login', async (req, res) => {
 router.post('/logout', (req, res) => {
   res.clearCookie('user');
   res.status(200).json({ success: true, message: 'logout successful' });
-});
-
-// GET is-logged-in
-router.get('/is-logged-in', (req, res) => {
-  const message = isLoggedIn(req, res) ? 'logged in' : 'not logged in';
-  res.status(200).json({ success: true, message });
-});
-
-// GET is-admin
-// Check if the currently logged in user is an admin
-router.get('/is-admin', (req, res) => {
-  if (!isLoggedIn(req, res)) {
-    let err = new Error('not logged in');
-    return handleErr(err, req, res);
-  }
-  const userIsAdmin = isAdmin(req, res);
-  res.status(200).json({ success: true, message: `is admin: ${userIsAdmin}` });
 });
 
 export default router;
