@@ -1,15 +1,22 @@
 // Some insecure middleware functions
-// TODO: Fix these to use next() syntax (maybe)
 
-// Check if the user is logged in (... by existence of a cookie!)
-export function isLoggedIn(req, res) {
-  return !!req.cookies.user; // This simply checks if _any_ cookie named 'user' exists
+import { isAdmin, isLoggedIn } from './auth.js';
+import { handleUnauthorized } from './routes/errors';
+
+// Require user to be logged in.
+// This simply checks against the existence of a 'user' cookie
+export function checkIsLoggedIn(res, req, next) {
+  if (!isLoggedIn()) {
+    return handleUnauthorized(req, res, 'you must be logged in to do that');
+  }
+  next();
 }
 
-// Check if the user is an admin (by a cookie attribute!)
-export function isAdmin(req, res) {
-  const cookie = req.cookies.user;
-  if (!cookie) return false;
-  const role = JSON.parse(cookie).role;
-  return role === 'admin'; // Insecure: simply checks the cookie for 'role' parameter
+// Require user to have admin role
+// This checks insecurely against a 'role' attribute stored in the cookie
+export function checkIsAdmin(res, req, next) {
+  if (!isAdmin()) {
+    return handleUnauthorized(req, res, 'requires admin role');
+  }
+  next();
 }
