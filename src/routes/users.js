@@ -12,8 +12,30 @@ import {
   updatePasswordByEmail,
   updateUser,
 } from '../queries.js';
-import { checkIsAdmin } from '../middleware.js';
+import {
+  checkIsAdmin,
+  checkIsCurrentUserOrAdmin,
+  checkIsLoggedIn,
+} from '../middleware.js';
 const router = express.Router();
+
+// GET -- who is the current logged in user
+router.get('/whoami', async (req, res) => {
+  var message;
+  var user;
+  try {
+    const cookie = req.cookies?.user;
+    if (!cookie) {
+      message = 'you are not not logged in';
+    } else {
+      user = JSON.parse(cookie);
+      message = `you are logged in as ${user.email}`;
+    }
+    res.status(200).json({ message, user });
+  } catch (err) {
+    handleErr(err, req, res);
+  }
+});
 
 // GET all users
 router.get('/users', async (req, res) => {
@@ -25,6 +47,18 @@ router.get('/users', async (req, res) => {
     });
   } catch (err) {
     handleErr(err, req, res);
+  }
+});
+
+// GET single user
+router.get('/users/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    validateParams(req, 'id');
+    const rows = await getUserByID(id);
+    res.status(200).json({ success: true, rows });
+  } catch (err) {
+    handleErr(err, req, res, err.message, 401);
   }
 });
 
@@ -45,21 +79,9 @@ router.post('/users', checkIsAdmin, async (req, res) => {
   }
 });
 
-// GET single user
-router.get('/users/:id', async (req, res) => {
-  try {
-    const id = req.params.id;
-    validateParams(req, 'id');
-    const rows = await getUserByID(id);
-    res.status(200).json({ success: true, rows });
-  } catch (err) {
-    handleErr(err, req, res, err.message, 401);
-  }
-});
-
 // PUT user
 // Allows updating a user's name, email, or password all in one request.
-router.put('/users/:id', async (req, res) => {
+router.put('/users/:id', checkIsCurrentUserOrAdmin, async (req, res) => {
   try {
     validateParams(req, 'id', 'name', 'email');
     const { id } = req.params;
@@ -83,13 +105,13 @@ router.put('/users/:id', async (req, res) => {
   }
 });
 
-// UPDATE password -- update password for a single user by email
+// UPDATE password -- update password for currenty logged in user by email
 // Params:  email, password
-router.post('/update-password', async (req, res) => {
+router.post('/update-password', checkIsLoggedIn, async (req, res) => {
   try {
     validateParams(req, 'email', 'password');
     const { email, password } = req.body;
-    await updatePasswordByEmail(email, password);
+    await updatePasswordByEmail(email, password); // Insecure: allows setting the password for any user by email
     res.status(200).json({ success: true, message: 'password updated' });
   } catch (err) {
     handleErr(err, req, res, 'update password failed: ' + err.message);
