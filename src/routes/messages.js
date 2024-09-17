@@ -1,9 +1,9 @@
 // Message-board related routes
 
-const express = require('express');
+import express from 'express';
+import { validateParams } from '../utils.js';
+import { getMessages, addMessage, deleteMessage } from '../queries.js';
 const router = express.Router();
-const { validateParams } = require('../utils.js');
-const { getMessages, addMessage, deleteMessage } = require('../queries.js');
 
 // GET messages
 router.get('/messages', (req, res) => {});
@@ -14,4 +14,4 @@ router.post('/messages', (req, res) => {});
 // DELETE messages
 router.delete('/messages', (req, res) => {});
 
-module.exports = router;
+export default router;

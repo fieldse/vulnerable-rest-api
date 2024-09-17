@@ -1,8 +1,8 @@
 // News-related routes
 
-const express = require('express');
+import express from 'express';
+import { getNews, addNews, deleteNews } from '../queries.js';
 const router = express.Router();
-const { getNews, addNews, deleteNews } = require('../queries.js');
 
 // GET news
 router.get('/news', (req, res) => {});
@@ -13,4 +13,4 @@ router.post('/news', (req, res) => {});
 // DELETE news
 router.delete('/news', (req, res) => {});
 
-module.exports = router;
+export default router;

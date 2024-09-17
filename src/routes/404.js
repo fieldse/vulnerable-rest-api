@@ -1,7 +1,7 @@
 // 404 and error routes
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const { handleErr } = require('./errors.js');
+import { handleErr } from './errors.js';
 
 // 400
 router.get('/400', (req, res) => {
@@ -27,4 +27,4 @@ router.all('*', (req, res) => {
   return handleErr(err, req, res, 404);
 });
 
-module.exports = router;
+export default router;

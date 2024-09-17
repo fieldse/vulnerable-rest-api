@@ -1,18 +1,17 @@
 // All routes handled here
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-
-const auth = require('./auth.js');
-const contact = require('./contact.js');
-const messages = require('./messages.js');
-const news = require('./news.js');
-const users = require('./users.js');
-const errRoutes = require('./404.js');
-const { API_BASE_PATH } = require('../config.js');
+import auth from './auth.js';
+import contact from './contact.js';
+import messages from './messages.js';
+import news from './news.js';
+import users from './users.js';
+import errRoutes from './404.js';
+import { API_BASE_PATH } from '../config.js';
 
 // Register all routers with the base API path
 // GET Index
-router.get('/', (req, res) => {
+router.get(API_BASE_PATH + '/', (req, res) => {
   res.send('Welcome to Vulnerable API!');
 });
 
@@ -23,4 +22,4 @@ router.use(API_BASE_PATH, messages);
 router.use(API_BASE_PATH, users);
 router.use(API_BASE_PATH, errRoutes); // catch-all error routes
 
-module.exports = router;
+export default router;

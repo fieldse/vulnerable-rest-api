@@ -1,10 +1,10 @@
 // Auth-related routes
-const express = require('express');
+import express from 'express';
+import { validateParams } from '../utils.js';
+import { isAdmin, isLoggedIn } from '../middleware.js';
+import { getUserByEmail, validatePassword } from '../queries.js';
+import { handleErr } from './errors.js';
 const router = express.Router();
-const { validateParams } = require('../utils.js');
-const { isAdmin, isLoggedIn } = require('../middleware.js');
-const { getUserByEmail, validatePassword } = require('../queries.js');
-const { handleErr } = require('./errors.js');
 
 // POST Login
 // Params:  email, password
@@ -50,10 +50,11 @@ router.get('/is-logged-in', (req, res) => {
 // Check if the currently logged in user is an admin
 router.get('/is-admin', (req, res) => {
   if (!isLoggedIn(req, res)) {
-    return handleErr(err, req, res, 'not logged in', 401);
+    let err = new Error('not logged in');
+    return handleErr(err, req, res);
   }
   const userIsAdmin = isAdmin(req, res);
   res.status(200).json({ success: true, message: `is admin: ${userIsAdmin}` });
 });
 
-module.exports = router;
+export default router;

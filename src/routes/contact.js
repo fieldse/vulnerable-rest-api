@@ -1,9 +1,9 @@
 // Contact form related routes
 
-const express = require('express');
+import express from 'express';
+import { validateParams } from '../utils.js';
+import { handleErr } from './errors.js';
 const router = express.Router();
-const { validateParams } = require('../utils.js');
-const { handleErr } = require('./errors.js');
 
 // POST Contact
 // Params: email, name, message
@@ -17,4 +17,4 @@ router.post('/contact', (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

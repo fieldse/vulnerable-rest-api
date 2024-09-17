@@ -1,14 +1,12 @@
 // Intentionally vulnerable Express.js REST API
-const express = require('express');
+import express from 'express';
+import bodyParser from 'body-parser';
+import morgan from 'morgan';
+import cookieParser from 'cookie-parser';
+import routes from './routes/index.js';
+import { PORT } from './config.js';
+import { logInfo } from './logger.js';
 const app = express();
-const config = require('./config.js');
-const bodyParser = require('body-parser');
-const morgan = require('morgan');
-const cookieParser = require('cookie-parser');
-const routes = require('./routes/index.js');
-
-const { logInfo } = require('./logger.js');
-const { PORT } = config;
 
 // Body-parser middleware for JSON requests
 app.use(bodyParser.json());

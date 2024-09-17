@@ -1,17 +1,17 @@
 // User-related routes
 
-const express = require('express');
-const router = express.Router();
-const { validateParams } = require('../utils.js');
-const { handleErr } = require('./errors.js');
-const { logInfo, logSuccess } = require('../logger.js');
-const {
+import express from 'express';
+import { validateParams } from '../utils.js';
+import { handleErr } from './errors.js';
+import { logInfo, logSuccess } from '../logger.js';
+import {
   getUsers,
   getUserByID,
   updatePasswordById,
   updatePasswordByEmail,
   updateUser,
-} = require('../queries.js');
+} from '../queries.js';
+const router = express.Router();
 
 // GET all users
 router.get('/users', async (req, res) => {
@@ -77,4 +77,4 @@ router.post('/update-password', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;
