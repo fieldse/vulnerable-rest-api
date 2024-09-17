@@ -5,24 +5,43 @@ import { validateParams } from '../utils.js';
 import { handleErr } from './errors.js';
 import { logInfo, logSuccess } from '../logger.js';
 import {
+  addUser,
   getUsers,
   getUserByID,
   updatePasswordById,
   updatePasswordByEmail,
   updateUser,
 } from '../queries.js';
+import { checkIsAdmin } from '../middleware.js';
 const router = express.Router();
 
 // GET all users
 router.get('/users', async (req, res) => {
   try {
-    const rows = await getUsers();
+    const data = await getUsers();
     res.status(200).json({
       success: true,
-      rows,
+      data,
     });
   } catch (err) {
     handleErr(err, req, res);
+  }
+});
+
+// POST single user - admin required
+router.post('/users', checkIsAdmin, async (req, res) => {
+  try {
+    validateParams(req, 'name', 'email', 'role', 'password');
+    const { name, email, role, password } = req.body;
+    const result = await addUser(name, email, role, password);
+    if (!result) {
+      throw new Error('add user failed');
+    }
+    res
+      .status(200)
+      .json({ success: true, message: `added user ${email} -- id: ${result}` });
+  } catch (err) {
+    handleErr(err, req, res, err.message, 401);
   }
 });
 

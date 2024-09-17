@@ -68,12 +68,13 @@ export async function getUserByID(id) {
 }
 
 // Add user (safe/parameterized). Returns ID on success
-export async function addUser(name, email, role) {
+export async function addUser(name, email, role, password) {
   const result = await querySafe(
-    'INSERT INTO message_board (name, email, role) VALUES (?, ?, ?)',
+    'INSERT INTO users (name, email, role, password) VALUES (?, ?, ?, ?)',
     name,
     email,
-    role
+    role,
+    password
   );
   return result.insertId;
 }
