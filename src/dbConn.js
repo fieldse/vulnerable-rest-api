@@ -1,6 +1,6 @@
 // MySQL database connection
-const mysql = require('mysql2/promise');
-const { DB_HOST, DB_USER, DB_PASSWORD, DB_NAME } = require('./config.js');
+import mysql from 'mysql2/promise';
+import { DB_HOST, DB_USER, DB_PASSWORD, DB_NAME } from './config.js';
 
 // Initialize database connection
 function newConn() {
@@ -28,7 +28,7 @@ function newPool() {
   });
 }
 
-module.exports = {
+export default {
   newConn,
   newPool,
 };
