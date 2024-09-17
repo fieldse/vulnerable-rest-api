@@ -26,3 +26,5 @@ router.all('*', (req, res) => {
   const err = new Error('path not found');
   return handleErr(err, req, res, 404);
 });
+
+module.exports = router;

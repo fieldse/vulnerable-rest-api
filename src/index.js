@@ -2,11 +2,10 @@
 const express = require('express');
 const app = express();
 const config = require('./config.js');
-const api = require('./api.js');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
-const api = require('./routes/index.js');
+const routes = require('./routes/index.js');
 
 const { logInfo } = require('./logger.js');
 const { PORT } = config;
@@ -21,7 +20,7 @@ app.use(cookieParser());
 app.use(morgan('tiny'));
 
 // Add routes
-app.use('/', api);
+app.use(routes);
 
 app.listen(PORT, () => {
   logInfo(`API started on ${PORT}`);

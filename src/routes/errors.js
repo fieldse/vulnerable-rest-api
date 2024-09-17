@@ -1,5 +1,5 @@
 // Error handlers
-import { logErr } from '../logger.js';
+const { logErr } = require('../logger.js');
 
 // Handle invalid request.
 // Logs error, returns error status code with message.

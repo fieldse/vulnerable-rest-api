@@ -4,7 +4,7 @@ const express = require('express');
 const router = express.Router();
 const { validateParams } = require('../utils.js');
 const { handleErr } = require('./errors.js');
-const { logInfo, logSuccess } = require('./logger.js');
+const { logInfo, logSuccess } = require('../logger.js');
 const {
   getUsers,
   getUserByID,
