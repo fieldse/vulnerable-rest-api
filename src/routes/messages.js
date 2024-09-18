@@ -9,8 +9,8 @@ const router = express.Router();
 // GET messages
 router.get('/messages', async (req, res) => {
   try {
-    const data = await getMessages();
-    res.status(200).json({ success: true, data });
+    const rows = await getMessages();
+    res.status(200).json({ success: true, rows });
   } catch (err) {
     handleErr(err, req, res);
   }

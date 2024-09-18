@@ -24,9 +24,8 @@ router.post('/login', async (req, res) => {
         .json({ success: false, message: 'invalid password' }); // insecure: allows account enumeration, by revealing user exists but invalid password.
     }
 
-    // Valid login -- set cookie
-    const cookie = JSON.stringify(user);
-    res.cookie('user', cookie);
+    // Valid login -- return user details
+    res.cookie('user', JSON.stringify(user)); // Setting cookie here for using API headlessly with Postman
     res.status(200).json({ success: true, message: 'login successful', user });
   } catch (err) {
     handleErr(err, req, res);

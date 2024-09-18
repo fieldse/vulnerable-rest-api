@@ -9,8 +9,8 @@ const router = express.Router();
 // GET Contact
 router.get('/contact', async (req, res) => {
   try {
-    const data = await getContacts();
-    res.status(200).json({ success: true, data });
+    const rows = await getContacts();
+    res.status(200).json({ success: true, rows });
   } catch (err) {
     handleErr(err, req, res);
   }

@@ -10,8 +10,8 @@ const router = express.Router();
 // GET news
 router.get('/news', async (req, res) => {
   try {
-    const data = await getNews();
-    res.status(200).json({ success: true, data });
+    const rows = await getNews();
+    res.status(200).json({ success: true, rows });
   } catch (err) {
     handleErr(err, req, res);
   }
