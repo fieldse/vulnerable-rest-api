@@ -11,6 +11,7 @@ import {
   updatePasswordById,
   updatePasswordByEmail,
   updateUser,
+  deleteUser,
 } from '../queries.js';
 import {
   checkIsAdmin,
@@ -40,10 +41,10 @@ router.get('/whoami', async (req, res) => {
 // GET all users
 router.get('/users', async (req, res) => {
   try {
-    const data = await getUsers();
+    const rows = await getUsers();
     res.status(200).json({
       success: true,
-      data,
+      rows,
     });
   } catch (err) {
     handleErr(err, req, res);
@@ -55,8 +56,8 @@ router.get('/users/:id', async (req, res) => {
   try {
     const id = req.params.id;
     validateParams(req, 'id');
-    const rows = await getUserByID(id);
-    res.status(200).json({ success: true, rows });
+    const user = await getUserByID(id);
+    res.status(200).json({ success: true, user });
   } catch (err) {
     handleErr(err, req, res, err.message, 401);
   }
@@ -71,9 +72,11 @@ router.post('/users', checkIsAdmin, async (req, res) => {
     if (!result) {
       throw new Error('add user failed');
     }
-    res
-      .status(200)
-      .json({ success: true, message: `added user ${email} -- id: ${result}` });
+    res.status(200).json({
+      success: true,
+      message: `added user ${email} -- id: ${result}`,
+      userId: result,
+    });
   } catch (err) {
     handleErr(err, req, res, err.message, 401);
   }
@@ -115,6 +118,20 @@ router.post('/update-password', checkIsLoggedIn, async (req, res) => {
     res.status(200).json({ success: true, message: 'password updated' });
   } catch (err) {
     handleErr(err, req, res, 'update password failed: ' + err.message);
+  }
+});
+
+// DELETE single user
+router.delete('/users/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    validateParams(req, 'id');
+    const result = await deleteUser(id);
+    res
+      .status(200)
+      .json({ success: true, message: `deleted ${result.affectedRows} rows` });
+  } catch (err) {
+    handleErr(err, req, res, err.message, 401);
   }
 });
 
