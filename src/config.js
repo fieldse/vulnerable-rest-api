@@ -7,6 +7,7 @@ dotenv.config();
 export const API_VERSION = process.env.API_VERSION || 'v1';
 export const PORT = process.env.PORT || 3000;
 export const API_BASE_PATH = `/api/${API_VERSION}`;
+export const DEBUG = process.env.PORT;
 
 // MySQL database config
 export const DB_HOST = process.env.DB_HOST || 'localhost';
@@ -22,4 +23,5 @@ export default {
   DB_USER,
   DB_PASSWORD,
   DB_NAME,
+  DEBUG,
 };

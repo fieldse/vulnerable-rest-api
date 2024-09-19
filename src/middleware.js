@@ -2,6 +2,25 @@
 
 import { isAdmin, isLoggedIn, isCurrentUser } from './auth.js';
 import { handleUnauthorized } from './routes/errors.js';
+import { DEBUG } from './config.js';
+import { logDebug } from './logger.js';
+
+// Log request cookies
+export function logCookies(req, res, next) {
+  if (DEBUG) {
+    logDebug(
+      `${req.method} ${req.path}`,
+      'headers:',
+      JSON.stringify(req.headers || {})
+    );
+    logDebug(
+      `${req.method} ${req.path}`,
+      'cookies:',
+      JSON.stringify(req.cookies || {})
+    );
+  }
+  next();
+}
 
 // Require user to be logged in.
 // This simply checks against the existence of a 'user' cookie
