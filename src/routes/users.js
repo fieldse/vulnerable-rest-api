@@ -20,24 +20,6 @@ import {
 } from '../middleware.js';
 const router = express.Router();
 
-// GET -- who is the current logged in user
-router.get('/whoami', async (req, res) => {
-  var message;
-  var user;
-  try {
-    const cookie = req.cookies?.user;
-    if (!cookie) {
-      message = 'you are not not logged in';
-    } else {
-      user = JSON.parse(cookie);
-      message = `you are logged in as ${user.email}`;
-    }
-    res.status(200).json({ message, user });
-  } catch (err) {
-    handleErr(err, req, res);
-  }
-});
-
 // GET all users
 router.get('/users', async (req, res) => {
   try {
