@@ -19,3 +19,26 @@ export function isCurrentUser(req) {
   if (!cookie || !userId) return false;
   return userId == cookie.id;
 }
+
+// Generate a really insecure token for the user
+export function generateToken(user) {
+  if (!user) {
+    throw new Error('generateToken: user is empty');
+  }
+  return Buffer.from(JSON.stringify(user)).toString('base64');
+}
+
+// Really insecure token validation
+// This currently just decodes the token into a user.
+export function validateToken(token) {
+  try {
+    const decoded = Buffer.from(token, 'base64').toString('ascii');
+    console.log('=== debug: decoded: ' + decoded);
+    const parsedUser = JSON.parse(decoded);
+    console.log('=== debug: parsedUser.email: ' + parsedUser?.email);
+    return parsedUser;
+  } catch (err) {
+    console.log('decode token failed:', err.message);
+    return;
+  }
+}
