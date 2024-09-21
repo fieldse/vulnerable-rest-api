@@ -4,7 +4,8 @@ import { logErr } from './logger.js';
 
 // Insecurely check if the user is authenticated.
 export function isLoggedIn(req) {
-  return !!validateToken(req); // Insecure: this simply checks if the token can be decoded to an object, without any validation.
+  const token = parseToken(req);
+  return !!token; // Insecure: this simply checks if the token can be decoded to an object, without any validation.
 }
 
 // Check if the user is an admin by the authentication token.
@@ -17,9 +18,9 @@ export function isAdmin(req) {
 // Check if the logged in user's ID matches the userId route parameter
 export function isCurrentUser(req) {
   const userId = req.params.userId;
-  const cookie = req.cookies?.user;
-  if (!cookie || !userId) return false;
-  return userId == cookie.id;
+  const user = parseToken(req);
+  if (!user || !userId) return false;
+  return userId == user.id;
 }
 
 // Generate a really insecure token for the user
@@ -29,12 +30,6 @@ export function generateToken(user) {
   }
   return Buffer.from(JSON.stringify(user)).toString('base64');
 }
-
-// Really insecure token validation. Basically just checks the token can be decoded into an object.
-export const validateToken = (req) => {
-  const token = parseToken(req);
-  return !!token;
-};
 
 // Extract and parse token into User object from request headers.
 export const parseToken = (req) => {
