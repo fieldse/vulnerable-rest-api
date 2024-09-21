@@ -5,10 +5,12 @@ import { getUserByEmail, validatePassword } from '../queries.js';
 import { handleErr } from './errors.js';
 import { generateToken, parseToken } from '../auth.js';
 import { logDebug } from '../logger.js';
+import { checkIsAdmin } from '../middleware.js';
 const router = express.Router();
 
 // POST Login
 // Params:  email, password
+// Returns user and token on success.
 router.post('/login', async (req, res) => {
   try {
     validateParams(req, 'email', 'password');
@@ -61,6 +63,11 @@ router.get('/validate-token', async (req, res) => {
   } catch (err) {
     handleErr(err, req, res);
   }
+});
+
+// Protected route Validate admin status from token
+router.get('/is-admin', checkIsAdmin, async (req, res) => {
+  res.status(200).json({ success: true, message: 'you are an admin' });
 });
 
 export default router;
