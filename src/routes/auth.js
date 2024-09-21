@@ -3,7 +3,7 @@ import express from 'express';
 import { validateParams } from '../utils.js';
 import { getUserByEmail, validatePassword } from '../queries.js';
 import { handleErr } from './errors.js';
-import { generateToken, parseToken } from '../auth.js';
+import { generateToken, parseToken, validateToken } from '../auth.js';
 import { logDebug } from '../logger.js';
 import { checkIsAdmin } from '../middleware.js';
 const router = express.Router();
@@ -46,20 +46,13 @@ router.post('/login', async (req, res) => {
 
 // Validate login token
 router.get('/validate-token', async (req, res) => {
-  var message;
-  var user;
-  var isValid = false;
   try {
-    const token = req.headers?.authorization?.replace('Bearer ', '') || '';
-    if (!token) {
-      message = 'no token';
-    } else {
-      logDebug(`authToken: ${token}`);
-      user = parseToken(token);
-      isValid = !!user;
-      message = isValid ? 'token is valid' : 'invalid token';
+    if (!req.headers?.authorization) {
+      return res.status(400).json({ message: 'no token' });
     }
-    res.status(200).json({ message, user, isValid });
+    const isValid = validateToken(req);
+    const message = isValid ? 'token is valid' : 'token is invalid';
+    res.status(200).json({ message, isValid });
   } catch (err) {
     handleErr(err, req, res);
   }

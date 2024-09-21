@@ -31,6 +31,12 @@ export function generateToken(user) {
   return Buffer.from(JSON.stringify(user)).toString('base64');
 }
 
+// Really insecure token validation
+export const validateToken = (req, res) => {
+  const token = parseToken(req);
+  return !!token; // simply checks if the token can be decoded to an object, without any validation.
+};
+
 // Extract and parse token into User object from request headers.
 export const parseToken = (req) => {
   try {
