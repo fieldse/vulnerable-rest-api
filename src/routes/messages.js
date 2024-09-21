@@ -4,6 +4,7 @@ import express from 'express';
 import { validateParams } from '../utils.js';
 import { getMessages, addMessage, deleteMessage } from '../queries.js';
 import { handleErr } from './errors.js';
+import { checkIsAdmin, checkIsLoggedIn } from '../middleware.js';
 const router = express.Router();
 
 // GET messages
@@ -17,7 +18,8 @@ router.get('/messages', async (req, res) => {
 });
 
 // POST messages
-router.post('/messages', async (req, res) => {
+// Insecure: this route only checks for logged in
+router.post('/messages', checkIsLoggedIn, async (req, res) => {
   try {
     const { title, content, userId } = req.body;
     validateParams(req, 'title', 'content', 'userId');
@@ -30,7 +32,7 @@ router.post('/messages', async (req, res) => {
 });
 
 // DELETE messages
-router.delete('/messages/:id', async (req, res) => {
+router.delete('/messages/:id', checkIsAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     validateParams(req, 'id');

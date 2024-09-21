@@ -3,9 +3,7 @@ import express from 'express';
 import { validateParams } from '../utils.js';
 import { getUserByEmail, validatePassword } from '../queries.js';
 import { handleErr } from './errors.js';
-import { generateToken, isAdmin, parseToken, validateToken } from '../auth.js';
-import { logDebug } from '../logger.js';
-import { checkIsAdmin } from '../middleware.js';
+import { generateToken, isAdmin, validateToken } from '../auth.js';
 const router = express.Router();
 
 // POST Login

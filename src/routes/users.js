@@ -39,6 +39,11 @@ router.get('/users/:id', async (req, res) => {
     const id = req.params.id;
     validateParams(req, 'id');
     const user = await getUserByID(id);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'user not found' });
+    }
     res.status(200).json({ success: true, user });
   } catch (err) {
     handleErr(err, req, res, err.message, 401);
@@ -66,11 +71,12 @@ router.post('/users', checkIsAdmin, async (req, res) => {
 
 // PUT user
 // Allows updating a user's name, email, or password all in one request.
+// This is a dangerous route prone to exploitation.
 router.put('/users/:id', checkIsCurrentUserOrAdmin, async (req, res) => {
   try {
     validateParams(req, 'id', 'name', 'email');
     const { id } = req.params;
-    const { name, email, password } = req.body; // Insecure: No validation for logged-in user role, nor matching ID to target user ID.
+    const { name, email, password } = req.body;
 
     // update password if given
     if (!!password) {
@@ -92,6 +98,7 @@ router.put('/users/:id', checkIsCurrentUserOrAdmin, async (req, res) => {
 
 // UPDATE password -- update password for currenty logged in user by email
 // Params:  email, password
+// Insecure: This is a dangerous route, which only checks for logged-in status rather than validating the target user is the current user
 router.post('/update-password', checkIsLoggedIn, async (req, res) => {
   try {
     validateParams(req, 'email', 'password');
@@ -104,7 +111,7 @@ router.post('/update-password', checkIsLoggedIn, async (req, res) => {
 });
 
 // DELETE single user
-router.delete('/users/:id', async (req, res) => {
+router.delete('/users/:id', checkIsAdmin, async (req, res) => {
   try {
     const id = req.params.id;
     validateParams(req, 'id');
