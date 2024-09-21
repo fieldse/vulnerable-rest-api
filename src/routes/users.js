@@ -86,7 +86,7 @@ router.put('/users/:id', checkIsCurrentUserOrAdmin, async (req, res) => {
     const ok = await updateUser(id, name, email);
     if (!ok) {
       let err = new Error(`no user found for id ${id}`);
-      handleErr(err, req, res, err.message, 404);
+      return handleErr(err, req, res, '', 404);
     }
     const user = { id, name, email };
     logSuccess('updated user details:', JSON.stringify(user));

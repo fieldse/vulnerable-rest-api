@@ -45,7 +45,7 @@ export function checkIsAdmin(req, res, next) {
 // Require currently logged in user to match userId parameter, or have admin role
 // This checks insecurely against a 'role' attribute stored in the cookie
 export function checkIsCurrentUserOrAdmin(req, res, next) {
-  if (!isCurrentUser(req) || !isAdmin(req)) {
+  if (!isCurrentUser(req) && !isAdmin(req)) {
     return handleUnauthorized(req, res, 'requires admin or current user role');
   }
   next();
