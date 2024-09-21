@@ -1,17 +1,34 @@
 // News-related routes
 
 import express from 'express';
-import { getNews, addNews, deleteNews } from '../queries.js';
+import { getNews, addNews, deleteNews, getNewsItem } from '../queries.js';
 import { handleErr } from './errors.js';
 import { validateParams } from '../utils.js';
 import { checkIsAdmin } from '../middleware.js';
 const router = express.Router();
 
-// GET news
+// GET news index
 router.get('/news', async (req, res) => {
   try {
     const rows = await getNews();
     res.status(200).json({ success: true, rows });
+  } catch (err) {
+    handleErr(err, req, res);
+  }
+});
+
+// GET news item
+router.get('/news/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const item = await getNewsItem(id);
+    if (!item) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'item not found' });
+    }
+
+    res.status(200).json({ success: true, news: item });
   } catch (err) {
     handleErr(err, req, res);
   }

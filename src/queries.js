@@ -105,6 +105,15 @@ export async function getNews() {
   );
 }
 
+// Get news item
+export async function getNewsItem(id) {
+  const result = await querySafe(
+    'SELECT n.id, n.title, n.content, u.email, u.name AS user_name FROM news n LEFT JOIN users u ON n.posted_by_id = u.id WHERE n.id = ?',
+    id
+  );
+  return result[0];
+}
+
 // Add news entry. Returns ID on success
 export async function addNews(title, content, userId) {
   const result = await querySafe(
@@ -126,6 +135,15 @@ export async function getMessages() {
   return await queryUnsafe(
     'SELECT m.id, m.title, m.content, u.email, u.name AS user_name FROM message_board m LEFT JOIN users u ON m.posted_by_id = u.id'
   );
+}
+
+// Get single message board item
+export async function getMessage(id) {
+  const result = await querySafe(
+    'SELECT m.id, m.title, m.content, u.email, u.name AS user_name FROM message_board m LEFT JOIN users u ON m.posted_by_id = u.id WHERE m.id = ?',
+    id
+  );
+  return result[0];
 }
 
 // Add message board entry. Returns ID on success
@@ -171,8 +189,10 @@ export default {
   updatePasswordByEmail,
   validatePassword,
   getNews,
+  getNewsItem,
   addNews,
   deleteNews,
+  getMessage,
   getMessages,
   addMessage,
   deleteMessage,
