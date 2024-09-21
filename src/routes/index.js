@@ -1,7 +1,7 @@
 // All routes handled here
 import express from 'express';
 const router = express.Router();
-import auth from './login.js';
+import auth from './auth.js';
 import contact from './contact.js';
 import messages from './messages.js';
 import news from './news.js';

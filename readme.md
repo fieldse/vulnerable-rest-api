@@ -66,8 +66,8 @@ _TODO_: set up `seed` script.
 
 These are the API endpoints:
 
-- `POST /login` - Accepts `username` and `password` in request body. Returns `{"success": true, "userId": [int] }` on login success, and sets a cookie.
-- `POST /logout` - Clears the login cookie.
+- `POST /login` - Accepts `username` and `password` in request body. Returns user and token on success.
+- `POST /validate-token` - Validates the the token from the request Authorization header. Returns user on success.
 - `POST /contact` - Accepts `email`, `name`, and `message` parameters in request body. Stores to
 - `POST /password-reset` - Accepts `userId` and `password` parameters in request body. Expects current user to be authenticated.
 - `GET  /users` - Returns list of users.

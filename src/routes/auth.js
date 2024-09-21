@@ -3,7 +3,7 @@ import express from 'express';
 import { validateParams } from '../utils.js';
 import { getUserByEmail, validatePassword } from '../queries.js';
 import { handleErr } from './errors.js';
-import { generateToken, validateToken } from '../auth.js';
+import { generateToken, parseToken } from '../auth.js';
 import { logDebug } from '../logger.js';
 const router = express.Router();
 
@@ -42,12 +42,6 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// POST Logout
-router.post('/logout', (req, res) => {
-  res.clearCookie('user');
-  res.status(200).json({ success: true, message: 'logout successful' });
-});
-
 // Validate login token
 router.get('/validate-token', async (req, res) => {
   var message;
@@ -59,7 +53,7 @@ router.get('/validate-token', async (req, res) => {
       message = 'no token';
     } else {
       logDebug(`authToken: ${token}`);
-      user = validateToken(token);
+      user = parseToken(token);
       isValid = !!user;
       message = isValid ? 'token is valid' : 'invalid token';
     }
