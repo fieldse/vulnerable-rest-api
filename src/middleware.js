@@ -34,7 +34,9 @@ export function checkIsLoggedIn(req, res, next) {
 // Require user to have admin role
 // This checks insecurely against a 'role' attribute stored in the cookie
 export function checkIsAdmin(req, res, next) {
-  if (!isAdmin(req)) {
+  const validAdmin = isAdmin(req);
+  logDebug('checkIsAdmin -- isAdmin?', validAdmin);
+  if (!validAdmin) {
     return handleUnauthorized(req, res, 'requires admin role');
   }
   next();

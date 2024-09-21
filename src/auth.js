@@ -1,6 +1,6 @@
 // Some insecure authentication functions
 
-import { logErr } from './logger';
+import { logErr } from './logger.js';
 
 // Insecurely check if the user is authenticated.
 export function isLoggedIn(req) {
@@ -11,9 +11,7 @@ export function isLoggedIn(req) {
 // This token is not signed, and so vulnerable to manipulation and forgery.
 export function isAdmin(req) {
   const user = parseToken(req);
-  if (!user) return false;
-  const role = JSON.parse(user)?.role;
-  return role === 'admin'; // Insecure: simply checks the token for 'role' parameter. which can be modified by the user.
+  return user?.role === 'admin'; // Insecure: simply checks the token for 'role' parameter. which can be modified by the user.
 }
 
 // Check if the logged in user's ID matches the userId route parameter
