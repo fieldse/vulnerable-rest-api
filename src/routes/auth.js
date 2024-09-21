@@ -3,7 +3,7 @@ import express from 'express';
 import { validateParams } from '../utils.js';
 import { getUserByEmail, validatePassword } from '../queries.js';
 import { handleErr } from './errors.js';
-import { generateToken, parseToken, validateToken } from '../auth.js';
+import { generateToken, isAdmin, parseToken, validateToken } from '../auth.js';
 import { logDebug } from '../logger.js';
 import { checkIsAdmin } from '../middleware.js';
 const router = express.Router();
@@ -59,8 +59,14 @@ router.get('/validate-token', async (req, res) => {
 });
 
 // Protected route Validate admin status from token
-router.get('/is-admin', checkIsAdmin, async (req, res) => {
-  res.status(200).json({ success: true, message: 'you are an admin' });
+router.get('/is-admin', async (req, res) => {
+  try {
+    const result = isAdmin(req);
+    const message = !!result ? 'you are an admin' : 'you are not an admin';
+    res.status(200).json({ success: true, message });
+  } catch (err) {
+    handleErr(err, req, res);
+  }
 });
 
 export default router;

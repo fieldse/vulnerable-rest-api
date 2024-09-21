@@ -56,8 +56,8 @@ router.post('/users', checkIsAdmin, async (req, res) => {
     }
     res.status(200).json({
       success: true,
-      message: `added user ${email} -- id: ${result}`,
-      userId: result,
+      message: 'added user',
+      user: { id: result, name, email, role },
     });
   } catch (err) {
     handleErr(err, req, res, err.message, 401);
