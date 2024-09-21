@@ -5,8 +5,8 @@ import { handleUnauthorized } from './routes/errors.js';
 import { DEBUG } from './config.js';
 import { logDebug } from './logger.js';
 
-// Log request cookies
-export function logCookies(req, res, next) {
+// Log request cookies and headers
+export function logHeaders(req, res, next) {
   if (DEBUG) {
     logDebug(
       `${req.method} ${req.path}`,

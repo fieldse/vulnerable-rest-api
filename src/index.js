@@ -7,21 +7,16 @@ import cors from 'cors';
 import routes from './routes/index.js';
 import { PORT } from './config.js';
 import { logInfo } from './logger.js';
-import { logCookies } from './middleware.js';
+import { logHeaders } from './middleware.js';
 const app = express();
 
 // Middleware
 app.use(bodyParser.json());
-app.use(
-  cors({
-    credentials: true, // allows cookies to be passed through -- see https://www.npmjs.com/package/cors
-    origin: ['http://localhost:8080'],
-  })
-);
+app.use(cors());
 
 // Cookie parsing
 app.use(cookieParser());
-app.use(logCookies);
+app.use(logHeaders);
 
 // Logging
 app.use(morgan('tiny'));
