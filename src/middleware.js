@@ -1,15 +1,52 @@
 // Some insecure middleware functions
-// TODO: Fix these to use next() syntax (maybe)
 
-// Check if the user is logged in (... by existence of a cookie!)
-export function isLoggedIn(req, res) {
-  return !!req.cookies.user; // This simply checks if _any_ cookie named 'user' exists
+import { isAdmin, isLoggedIn, isCurrentUser } from './auth.js';
+import { handleUnauthorized } from './routes/errors.js';
+import { DEBUG } from './config.js';
+import { logDebug } from './logger.js';
+
+// Log request cookies and headers
+export function logHeaders(req, res, next) {
+  if (DEBUG) {
+    logDebug(
+      `${req.method} ${req.path}`,
+      'headers:',
+      JSON.stringify(req.headers || {})
+    );
+    logDebug(
+      `${req.method} ${req.path}`,
+      'cookies:',
+      JSON.stringify(req.cookies || {})
+    );
+  }
+  next();
 }
 
-// Check if the user is an admin (by a cookie attribute!)
-export function isAdmin(req, res) {
-  const cookie = req.cookies.user;
-  if (!cookie) return false;
-  const role = JSON.parse(cookie).role;
-  return role === 'admin'; // Insecure: simply checks the cookie for 'role' parameter
+// Require user to be logged in.
+// This simply checks against the existence of a 'user' cookie
+export function checkIsLoggedIn(req, res, next) {
+  if (!isLoggedIn(req)) {
+    return handleUnauthorized(req, res, 'you must be logged in to do that');
+  }
+  next();
+}
+
+// Require user to have admin role
+// This checks insecurely against a 'role' attribute stored in the cookie
+export function checkIsAdmin(req, res, next) {
+  const validAdmin = isAdmin(req);
+  logDebug('checkIsAdmin -- isAdmin?', validAdmin);
+  if (!validAdmin) {
+    return handleUnauthorized(req, res, 'requires admin role');
+  }
+  next();
+}
+
+// Require currently logged in user to match userId parameter, or have admin role
+// This checks insecurely against a 'role' attribute stored in the cookie
+export function checkIsCurrentUserOrAdmin(req, res, next) {
+  if (!isCurrentUser(req) && !isAdmin(req)) {
+    return handleUnauthorized(req, res, 'requires admin or current user role');
+  }
+  next();
 }
