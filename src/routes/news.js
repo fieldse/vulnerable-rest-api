@@ -1,7 +1,13 @@
 // News-related routes
 
 import express from 'express';
-import { getNews, addNews, deleteNews, getNewsItem } from '../queries.js';
+import {
+  getNews,
+  addNews,
+  deleteNews,
+  getNewsItem,
+  updateNews,
+} from '../queries.js';
 import { handleErr } from './errors.js';
 import { validateParams } from '../utils.js';
 import { checkIsAdmin } from '../middleware.js';
@@ -41,6 +47,21 @@ router.post('/news', checkIsAdmin, async (req, res) => {
     validateParams(req, 'title', 'content', 'userId');
     const result = await addNews(title, content, userId);
     res.status(201).json({ success: true, message: `added -- id: ${result}` });
+  } catch (err) {
+    handleErr(err, req, res);
+  }
+});
+
+// UPDATE news
+router.put('/news/:id', checkIsAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, content } = req.body;
+    validateParams(req, 'id', 'title', 'content');
+    const result = await updateNews(id, title, content);
+    res
+      .status(200)
+      .json({ success: true, message: `updated ${result.affectedRows} rows` });
   } catch (err) {
     handleErr(err, req, res);
   }

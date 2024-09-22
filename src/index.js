@@ -16,7 +16,7 @@ app.use(cors());
 
 // Cookie parsing
 app.use(cookieParser());
-app.use(logHeaders);
+// app.use(logHeaders);
 
 // Logging
 app.use(morgan('tiny'));

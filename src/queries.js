@@ -125,6 +125,13 @@ export async function addNews(title, content, userId) {
   return result.insertId;
 }
 
+// Update news item
+export async function updateNews(id, title, content) {
+  return await queryUnsafe(
+    `UPDATE news SET title = '${title}', content = '${content}'  WHERE id = ${id}` // unsafe: unescaped directly interpolated content
+  );
+}
+
 // Delete news entry
 export async function deleteNews(id) {
   return await querySafe('DELETE FROM news WHERE id = ?', id);
@@ -155,6 +162,13 @@ export async function addMessage(title, content, userId) {
     userId
   );
   return result.insertId;
+}
+
+// Update message board item
+export async function updateMessage(id, title, content) {
+  return await queryUnsafe(
+    `UPDATE message_board SET title = '${title}', content = '${content}'  WHERE id = ${id}` // unsafe: unescaped directly interpolated content
+  );
 }
 
 // Delete message board entry

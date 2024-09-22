@@ -7,6 +7,7 @@ import {
   addMessage,
   deleteMessage,
   getMessage,
+  updateMessage,
 } from '../queries.js';
 import { handleErr } from './errors.js';
 import { checkIsAdmin, checkIsLoggedIn } from '../middleware.js';
@@ -48,6 +49,21 @@ router.post('/messages', checkIsLoggedIn, async (req, res) => {
     const result = await addMessage(title, content, userId);
     const message = `added message -- id: ${result}`;
     res.status(201).json({ success: true, message });
+  } catch (err) {
+    handleErr(err, req, res);
+  }
+});
+
+// UPDATE messages
+// Insecure: this route only checks for logged in
+router.put('/messages/:id', checkIsLoggedIn, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, content } = req.body;
+    validateParams(req, 'id', 'title', 'content');
+    const result = await updateMessage(id, title, content);
+    const message = `updated ${result.affectedRows} rows`;
+    res.status(200).json({ success: true, message });
   } catch (err) {
     handleErr(err, req, res);
   }
