@@ -5,12 +5,19 @@ import { validateParams } from '../utils.js';
 import { handleErr } from './errors.js';
 import { logInfo, logSuccess } from '../logger.js';
 import {
+  addUser,
   getUsers,
   getUserByID,
   updatePasswordById,
   updatePasswordByEmail,
   updateUser,
+  deleteUser,
 } from '../queries.js';
+import {
+  checkIsAdmin,
+  checkIsCurrentUserOrAdmin,
+  checkIsLoggedIn,
+} from '../middleware.js';
 const router = express.Router();
 
 // GET all users
@@ -31,8 +38,32 @@ router.get('/users/:id', async (req, res) => {
   try {
     const id = req.params.id;
     validateParams(req, 'id');
-    const rows = await getUserByID(id);
-    res.status(200).json({ success: true, rows });
+    const user = await getUserByID(id);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'user not found' });
+    }
+    res.status(200).json({ success: true, user });
+  } catch (err) {
+    handleErr(err, req, res, err.message, 401);
+  }
+});
+
+// POST single user - admin required
+router.post('/users', checkIsAdmin, async (req, res) => {
+  try {
+    validateParams(req, 'name', 'email', 'role', 'password');
+    const { name, email, role, password } = req.body;
+    const result = await addUser(name, email, role, password);
+    if (!result) {
+      throw new Error('add user failed');
+    }
+    res.status(200).json({
+      success: true,
+      message: 'added user',
+      user: { id: result, name, email, role },
+    });
   } catch (err) {
     handleErr(err, req, res, err.message, 401);
   }
@@ -40,11 +71,12 @@ router.get('/users/:id', async (req, res) => {
 
 // PUT user
 // Allows updating a user's name, email, or password all in one request.
-router.put('/users/:id', async (req, res) => {
+// This is a dangerous route prone to exploitation.
+router.put('/users/:id', checkIsCurrentUserOrAdmin, async (req, res) => {
   try {
     validateParams(req, 'id', 'name', 'email');
     const { id } = req.params;
-    const { name, email, password } = req.body; // Insecure: No validation for logged-in user role, nor matching ID to target user ID.
+    const { name, email, password } = req.body;
 
     // update password if given
     if (!!password) {
@@ -54,7 +86,7 @@ router.put('/users/:id', async (req, res) => {
     const ok = await updateUser(id, name, email);
     if (!ok) {
       let err = new Error(`no user found for id ${id}`);
-      handleErr(err, req, res, err.message, 404);
+      return handleErr(err, req, res, '', 404);
     }
     const user = { id, name, email };
     logSuccess('updated user details:', JSON.stringify(user));
@@ -64,16 +96,31 @@ router.put('/users/:id', async (req, res) => {
   }
 });
 
-// UPDATE password -- update password for a single user by email
+// UPDATE password -- update password for currenty logged in user by email
 // Params:  email, password
-router.post('/update-password', async (req, res) => {
+// Insecure: This is a dangerous route, which only checks for logged-in status rather than validating the target user is the current user
+router.post('/update-password', checkIsLoggedIn, async (req, res) => {
   try {
     validateParams(req, 'email', 'password');
     const { email, password } = req.body;
-    await updatePasswordByEmail(email, password);
+    await updatePasswordByEmail(email, password); // Insecure: allows setting the password for any user by email
     res.status(200).json({ success: true, message: 'password updated' });
   } catch (err) {
     handleErr(err, req, res, 'update password failed: ' + err.message);
+  }
+});
+
+// DELETE single user
+router.delete('/users/:id', checkIsAdmin, async (req, res) => {
+  try {
+    const id = req.params.id;
+    validateParams(req, 'id');
+    const result = await deleteUser(id);
+    res
+      .status(200)
+      .json({ success: true, message: `deleted ${result.affectedRows} rows` });
+  } catch (err) {
+    handleErr(err, req, res, err.message, 401);
   }
 });
 

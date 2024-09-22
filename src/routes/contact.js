@@ -4,13 +4,14 @@ import express from 'express';
 import { validateParams } from '../utils.js';
 import { handleErr } from './errors.js';
 import { addContact, getContacts, deleteContact } from '../queries.js';
+import { checkIsAdmin } from '../middleware.js';
 const router = express.Router();
 
 // GET Contact
 router.get('/contact', async (req, res) => {
   try {
-    const data = await getContacts();
-    res.status(200).json({ success: true, data });
+    const rows = await getContacts();
+    res.status(200).json({ success: true, rows });
   } catch (err) {
     handleErr(err, req, res);
   }
@@ -18,6 +19,7 @@ router.get('/contact', async (req, res) => {
 
 // POST Contact
 // Params: email, name, message
+// Insecure: this is a public route, allowing content posted by anyone
 router.post('/contact', async (req, res) => {
   try {
     validateParams(req, 'email', 'name', 'message');
@@ -32,7 +34,7 @@ router.post('/contact', async (req, res) => {
 });
 
 // DELETE contact
-router.delete('/contact/:id', async (req, res) => {
+router.delete('/contact/:id', checkIsAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     validateParams(req, 'id');

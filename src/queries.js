@@ -68,12 +68,13 @@ export async function getUserByID(id) {
 }
 
 // Add user (safe/parameterized). Returns ID on success
-export async function addUser(name, email, role) {
+export async function addUser(name, email, role, password) {
   const result = await querySafe(
-    'INSERT INTO message_board (name, email, role) VALUES (?, ?, ?)',
+    'INSERT INTO users (name, email, role, password) VALUES (?, ?, ?, ?)',
     name,
     email,
-    role
+    role,
+    password
   );
   return result.insertId;
 }
@@ -104,6 +105,15 @@ export async function getNews() {
   );
 }
 
+// Get news item
+export async function getNewsItem(id) {
+  const result = await querySafe(
+    'SELECT n.id, n.title, n.content, u.email, u.name AS user_name FROM news n LEFT JOIN users u ON n.posted_by_id = u.id WHERE n.id = ?',
+    id
+  );
+  return result[0];
+}
+
 // Add news entry. Returns ID on success
 export async function addNews(title, content, userId) {
   const result = await querySafe(
@@ -113,6 +123,13 @@ export async function addNews(title, content, userId) {
     userId
   );
   return result.insertId;
+}
+
+// Update news item
+export async function updateNews(id, title, content) {
+  return await queryUnsafe(
+    `UPDATE news SET title = '${title}', content = '${content}'  WHERE id = ${id}` // unsafe: unescaped directly interpolated content
+  );
 }
 
 // Delete news entry
@@ -127,6 +144,15 @@ export async function getMessages() {
   );
 }
 
+// Get single message board item
+export async function getMessage(id) {
+  const result = await querySafe(
+    'SELECT m.id, m.title, m.content, u.email, u.name AS user_name FROM message_board m LEFT JOIN users u ON m.posted_by_id = u.id WHERE m.id = ?',
+    id
+  );
+  return result[0];
+}
+
 // Add message board entry. Returns ID on success
 export async function addMessage(title, content, userId) {
   const result = await querySafe(
@@ -136,6 +162,13 @@ export async function addMessage(title, content, userId) {
     userId
   );
   return result.insertId;
+}
+
+// Update message board item
+export async function updateMessage(id, title, content) {
+  return await queryUnsafe(
+    `UPDATE message_board SET title = '${title}', content = '${content}'  WHERE id = ${id}` // unsafe: unescaped directly interpolated content
+  );
 }
 
 // Delete message board entry
@@ -170,8 +203,10 @@ export default {
   updatePasswordByEmail,
   validatePassword,
   getNews,
+  getNewsItem,
   addNews,
   deleteNews,
+  getMessage,
   getMessages,
   addMessage,
   deleteMessage,

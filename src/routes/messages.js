@@ -2,22 +2,47 @@
 
 import express from 'express';
 import { validateParams } from '../utils.js';
-import { getMessages, addMessage, deleteMessage } from '../queries.js';
+import {
+  getMessages,
+  addMessage,
+  deleteMessage,
+  getMessage,
+  updateMessage,
+} from '../queries.js';
 import { handleErr } from './errors.js';
+import { checkIsAdmin, checkIsLoggedIn } from '../middleware.js';
 const router = express.Router();
 
-// GET messages
+// GET messages index
 router.get('/messages', async (req, res) => {
   try {
-    const data = await getMessages();
-    res.status(200).json({ success: true, data });
+    const rows = await getMessages();
+    res.status(200).json({ success: true, rows });
+  } catch (err) {
+    handleErr(err, req, res);
+  }
+});
+
+// GET message item
+router.get('/messages/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await getMessage(id);
+    if (!result) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'message not found' });
+    }
+
+    res.status(200).json({ success: true, message: result });
   } catch (err) {
     handleErr(err, req, res);
   }
 });
 
 // POST messages
-router.post('/messages', async (req, res) => {
+// Insecure: this route only checks for logged in
+router.post('/messages', checkIsLoggedIn, async (req, res) => {
   try {
     const { title, content, userId } = req.body;
     validateParams(req, 'title', 'content', 'userId');
@@ -29,8 +54,23 @@ router.post('/messages', async (req, res) => {
   }
 });
 
+// UPDATE messages
+// Insecure: this route only checks for logged in
+router.put('/messages/:id', checkIsLoggedIn, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, content } = req.body;
+    validateParams(req, 'id', 'title', 'content');
+    const result = await updateMessage(id, title, content);
+    const message = `updated ${result.affectedRows} rows`;
+    res.status(200).json({ success: true, message });
+  } catch (err) {
+    handleErr(err, req, res);
+  }
+});
+
 // DELETE messages
-router.delete('/messages/:id', async (req, res) => {
+router.delete('/messages/:id', checkIsAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     validateParams(req, 'id');
