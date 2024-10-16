@@ -3,9 +3,10 @@
 import { logErr } from './logger.js';
 
 // Insecurely check if the user is authenticated.
+// This simply checks against the existence of an unsigned authorization token
 export function isLoggedIn(req) {
   const token = parseToken(req);
-  return !!token; // Insecure: this simply checks if the token can be decoded to an object, without any validation.
+  return !!token; // Insecure: doesn't validate the token
 }
 
 // Check if the user is an admin by the authentication token.
@@ -16,6 +17,8 @@ export function isAdmin(req) {
 }
 
 // Check if the logged in user's ID matches the userId route parameter
+// Required parameters:
+//  - userId:  The ID of the target user
 export function isCurrentUser(req) {
   const userId = req.params.userId;
   const user = parseToken(req);
