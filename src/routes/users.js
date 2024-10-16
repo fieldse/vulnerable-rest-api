@@ -34,10 +34,10 @@ router.get('/users', async (req, res) => {
 });
 
 // GET single user
-router.get('/users/:id', async (req, res) => {
+router.get('/users/:userId', async (req, res) => {
   try {
-    const id = req.params.id;
-    validateParams(req, 'id');
+    validateParams(req, 'userId');
+    const id = req.params.userId;
     const user = await getUserByID(id);
     if (!user) {
       return res
@@ -72,12 +72,11 @@ router.post('/users', checkIsAdmin, async (req, res) => {
 // PUT user
 // Allows updating a user's name, email, or password all in one request.
 // This is a dangerous route prone to exploitation.
-router.put('/users/:id', checkIsCurrentUserOrAdmin, async (req, res) => {
+router.put('/users/:userId', checkIsCurrentUserOrAdmin, async (req, res) => {
   try {
-    validateParams(req, 'id', 'name', 'email');
-    const { id } = req.params;
+    validateParams(req, 'userId', 'name', 'email');
+    const id = req.params.userId;
     const { name, email, password } = req.body;
-
     // update password if given
     if (!!password) {
       logInfo(`update password for user '${email}'`);

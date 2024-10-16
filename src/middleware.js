@@ -23,7 +23,7 @@ export function logHeaders(req, res, next) {
 }
 
 // Require user to be logged in.
-// This simply checks against the existence of a 'user' cookie
+// This simply checks against the existence of an unsigned authorization token
 export function checkIsLoggedIn(req, res, next) {
   if (!isLoggedIn(req)) {
     return handleUnauthorized(req, res, 'you must be logged in to do that');
@@ -32,7 +32,7 @@ export function checkIsLoggedIn(req, res, next) {
 }
 
 // Require user to have admin role
-// This checks insecurely against a 'role' attribute stored in the cookie
+// This checks insecurely against a 'role' attribute encoded in the authentication token
 export function checkIsAdmin(req, res, next) {
   const validAdmin = isAdmin(req);
   logDebug('checkIsAdmin -- isAdmin?', validAdmin);
@@ -43,7 +43,7 @@ export function checkIsAdmin(req, res, next) {
 }
 
 // Require currently logged in user to match userId parameter, or have admin role
-// This checks insecurely against a 'role' attribute stored in the cookie
+// This checks insecurely against a 'role' attribute encoded in the authentication token
 export function checkIsCurrentUserOrAdmin(req, res, next) {
   if (!isCurrentUser(req) && !isAdmin(req)) {
     return handleUnauthorized(req, res, 'requires admin or current user role');
